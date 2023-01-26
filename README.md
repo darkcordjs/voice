@@ -9,7 +9,7 @@
 	</p>
 </div>
 
-# 🚧 Working in Process
+# 🚧 Working in Progress
 
 ## About
 Official [Darkcord](https://github.com/JustAWaifuHunter/darkcord) Voice lib
