@@ -59,122 +59,132 @@ export class Voice {
 }
 
 export function VoicePlugin(
-  this: PluginManager,
   nodes: NodeOption[],
   kazagumoOptions: Omit<KazagumoOptions, "send">,
   shoukakuOptions?: ShoukakuOptions
 ) {
   return (manager: PluginManager) => {
-    const kazagumo = new Kazagumo(
-      {
-        ...kazagumoOptions,
-        send: (guildId, payload) => {
-          const guild = manager.client.cache.guilds.get(guildId);
-          if (guild)
-            manager.client.websocket.shards.get(guild.shardId)?.send(payload);
-        },
-      },
-      DarkcordConnector,
-      nodes,
-      shoukakuOptions
-    );
+    return {
+      name: "voice",
+      version: "0.1.0",
+      onStart() { },
+      load() {
+            const kazagumo = new Kazagumo(
+              {
+                ...kazagumoOptions,
+                send: (guildId, payload) => {
+                  const guild = manager.client.cache.guilds.get(guildId);
+                  if (guild)
+                    manager.client.websocket.shards
+                      .get(guild.shardId)
+                      ?.send(payload);
+                },
+              },
+              DarkcordConnector,
+              nodes,
+              shoukakuOptions
+            );
 
-    manager.addProperty("voice", new Voice(kazagumo));
+            manager.addProperty("voice", new Voice(kazagumo));
 
-    // Modify Voice Channel
-    this.overrideResource(
-      "VoiceChannel",
-      (X: typeof VoiceChannel) =>
-        class VoiceChannel extends X {
-          declare _client: Client;
-          play(track: KazagumoTrack) {
-            const currentPlayer = this._client.voice.getPlayer(this.guildId);
-            if (currentPlayer.voiceId !== this.id) {
-              currentPlayer.setVoiceChannel(this.id);
-            }
+            // Modify Voice Channel
+            this.overrideResource(
+              "VoiceChannel",
+              (X: typeof VoiceChannel) =>
+                class VoiceChannel extends X {
+                  declare _client: Client;
+                  play(track: KazagumoTrack) {
+                    const currentPlayer = this._client.voice.getPlayer(
+                      this.guildId
+                    );
+                    if (currentPlayer.voiceId !== this.id) {
+                      currentPlayer.setVoiceChannel(this.id);
+                    }
 
-            return currentPlayer.play(track);
-          }
-        }
-    );
+                    return currentPlayer.play(track);
+                  }
+                }
+            );
 
-    // Modify Guild
-    this.overrideResource(
-      "Guild",
-      (X: typeof Guild) =>
-        class Guild extends X {
-          declare _client: Client;
-          createPlayer(
-            textId: string,
-            voiceId: string,
-            options: Omit<
-              CreatePlayerOptions,
-              "textId" | "voiceId" | "guildId" | "shardId"
-            >
-          ) {
-            return this._client.voice.createPlayer({
-              shardId: Number(this.shardId),
-              textId,
-              voiceId,
-              guildId: this.id,
-              ...options,
+            // Modify Guild
+            this.overrideResource(
+              "Guild",
+              (X: typeof Guild) =>
+                class Guild extends X {
+                  declare _client: Client;
+                  createPlayer(
+                    textId: string,
+                    voiceId: string,
+                    options: Omit<
+                      CreatePlayerOptions,
+                      "textId" | "voiceId" | "guildId" | "shardId"
+                    >
+                  ) {
+                    return this._client.voice.createPlayer({
+                      shardId: Number(this.shardId),
+                      textId,
+                      voiceId,
+                      guildId: this.id,
+                      ...options,
+                    });
+                  }
+
+                  destroyPlayer() {
+                    return this._client.voice.destroyPlayer(this.id);
+                  }
+
+                  get voicePlayer() {
+                    return this._client.voice.getPlayer(this.id);
+                  }
+                }
+            );
+
+            // Prepare events
+            kazagumo.on("playerStart", (player, track) =>
+              manager.emit("voicePlayerStart", player, track)
+            );
+            kazagumo.on("playerCreate", (player) =>
+              manager.emit("voicePlayerCreate", player)
+            );
+            kazagumo.on("playerClosed", (player, data) =>
+              manager.emit("voicePlayerClose", player, data)
+            );
+            kazagumo.on("playerDestroy", (player) =>
+              manager.emit("voicePlayerDestroy", player)
+            );
+            kazagumo.on("playerEmpty", (player) =>
+              manager.emit("voicePlayerEmpty", player)
+            );
+            kazagumo.on("playerEnd", (player) =>
+              manager.emit("voicePlayerEnd", player)
+            );
+            kazagumo.on("playerException", (player, data) =>
+              manager.emit("voicePlayerException", player, data)
+            );
+            kazagumo.on("playerMoved", (player, state, channels) =>
+              manager.emit("voicePlayerMoved", player, state, channels)
+            );
+            kazagumo.on("playerResolveError", (player, track, message) => {
+              throw MakeError({
+                name: "VoicePlayerResolve",
+                message,
+                args: [
+                  ["track", track],
+                  ["player", player],
+                ],
+              });
             });
-          }
-
-          destroyPlayer() {
-            return this._client.voice.destroyPlayer(this.id);
-          }
-
-          get voicePlayer() {
-            return this._client.voice.getPlayer(this.id);
-          }
-        }
-    );
-
-    // Prepare events
-    kazagumo.on("playerStart", (player, track) =>
-      manager.emit("voicePlayerStart", player, track)
-    );
-    kazagumo.on("playerCreate", (player) =>
-      manager.emit("voicePlayerCreate", player)
-    );
-    kazagumo.on("playerClosed", (player, data) =>
-      manager.emit("voicePlayerClose", player, data)
-    );
-    kazagumo.on("playerDestroy", (player) =>
-      manager.emit("voicePlayerDestroy", player)
-    );
-    kazagumo.on("playerEmpty", (player) =>
-      manager.emit("voicePlayerEmpty", player)
-    );
-    kazagumo.on("playerEnd", (player) =>
-      manager.emit("voicePlayerEnd", player)
-    );
-    kazagumo.on("playerException", (player, data) =>
-      manager.emit("voicePlayerException", player, data)
-    );
-    kazagumo.on("playerMoved", (player, state, channels) =>
-      manager.emit("voicePlayerMoved", player, state, channels)
-    );
-    kazagumo.on("playerResolveError", (player, track, message) => {
-      throw MakeError({
-        name: "VoicePlayerResolve",
-        message,
-        args: [
-          ["track", track],
-          ["player", player],
-        ],
-      });
-    });
-    kazagumo.on("playerResumed", (player) =>
-      manager.emit("voicePlayerResume", player)
-    );
-    kazagumo.on("playerStuck", (player, data) =>
-      manager.emit("voicePlayerStuck", player, data)
-    );
-    kazagumo.on("playerUpdate", (player, data) =>
-      manager.emit("voicePlayerUpdate", player, data)
-    );
+            kazagumo.on("playerResumed", (player) =>
+              manager.emit("voicePlayerResume", player)
+            );
+            kazagumo.on("playerStuck", (player, data) =>
+              manager.emit("voicePlayerStuck", player, data)
+            );
+            kazagumo.on("playerUpdate", (player, data) =>
+              manager.emit("voicePlayerUpdate", player, data)
+            );
+      }
+    }
   };
 }
 

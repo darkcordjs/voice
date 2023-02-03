@@ -21,10 +21,10 @@ busboy@^1.6.0:
   dependencies:
     streamsearch "^1.1.0"
 
-darkcord@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/darkcord/-/darkcord-0.2.2.tgz#ae8f17ccc375bf8719d8e5be829d4f8313351656"
-  integrity sha512-FhT2tIqVNXz6PYCTTjBy3cXqST1Nz5lshP3+culq0q/dyHiklCwdVxUywvdFiYF8g6lyZoeCIVLKnA38YIqlpg==
+darkcord@^0.2.5-dev-9:
+  version "0.2.5-dev-9"
+  resolved "https://registry.yarnpkg.com/darkcord/-/darkcord-0.2.5-dev-9.tgz#4c729774464e5a4938d5e33463fb7de4a394ca39"
+  integrity sha512-ae39oPZX6GVOgrch/SRRumA7q5pjlmcJyQe73EMqnb5/4Chgj3UK0YeJWNwKlhy4tsj77XU6IDcjesc4z3qkOg==
   dependencies:
     discord-api-types "^0.37.25"
     ts-mixer "^6.0.2"

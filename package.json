@@ -4,7 +4,7 @@
   "typings": "./typing",
   "main": "./dist/index.js",
   "dependencies": {
-    "darkcord": "^0.2.2",
+    "darkcord": "^0.2.5-dev-9",
     "kazagumo": "^2.3.2",
     "shoukaku": "^3.3.1"
   },
