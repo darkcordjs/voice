@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "target": "ESNext",
+        "moduleResolution": "nodenext",
+        "strictNullChecks": true,
+        "outDir": "dist"
+    },
+    "exclude": ["dist"]
+}
