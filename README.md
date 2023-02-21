@@ -18,7 +18,7 @@ Official [Darkcord](https://github.com/JustAWaifuHunter/darkcord) Voice lib
 Node.js 16.9.0 or newer is required to installation.
 
 ```sh-session
-npm install @darkcord/voice
-yarn add @darkcord/voice
-pnpm add @darkcord/voice
+npm install @darkcord/lava
+yarn add @darkcord/lava
+pnpm add @darkcord/lava
 ```
