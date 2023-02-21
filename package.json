@@ -1,5 +1,16 @@
 {
 	"name": "@darkcord/lava",
+  "description": "Lava player plugin for darkcord",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
 	"dependencies": {
 		"kazagumo": "^2.3.2",
 		"shoukaku": "^3.3.1"
