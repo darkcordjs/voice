@@ -22,15 +22,15 @@ export class LavaPlayer {
     }
 
     get on() {
-        return this.#instance.on.bind(this.#instance) as Shoukaku["on"]
+        return this.#instance.on.bind(this.#instance) as Kazagumo["on"]
     }
 
     get once() {
-        return this.#instance.once.bind(this.#instance) as Shoukaku["once"]
+        return this.#instance.once.bind(this.#instance) as Kazagumo["once"]
     }
 
     get off() {
-        return this.#instance.off.bind(this.#instance) as Shoukaku["off"]
+        return this.#instance.off.bind(this.#instance) as Kazagumo["off"]
     }
 
     /**
