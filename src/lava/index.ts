@@ -83,10 +83,10 @@ export function Lava(options: LavaOptions): PluginFn {
                 declare _client: Client;
 
                 async play(track: Track, options?: PlayOptions) {
-                    const player = this._client.lava.getPlayer(this.guildId);
+                    let player = this._client.lava.getPlayer(this.guildId);
 
                     if (!player) {
-                        await this._client.lava.createPlayer({
+                        player = await this._client.lava.createPlayer({
                             guildId: this.guildId,
                             textId: this.id,
                             voiceId: this.id
