@@ -54,7 +54,7 @@ export class LavaPlayer {
      * Select a Lavalink node from the pool of nodes
      */
     getNode(name: string) {
-        return this.#instance.shoukaku.getNode(name)
+        return this.#instance.shoukaku.nodes.get(name)
     }
 
     /**
@@ -71,7 +71,7 @@ export class LavaPlayer {
         if (player instanceof Guild) guildId = player.id
 
         if (guildId) {
-            player = this.#instance.getPlayer(guildId) as Player;
+            player = this.#instance.getPlayer(guildId) as Player
         }
 
         if (player instanceof Player) {
